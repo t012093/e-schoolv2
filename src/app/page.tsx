@@ -10,12 +10,13 @@ import {
   BarChart3,
   Plus
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
-import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, DragEndEvent, DragOverEvent, DragStartEvent, DragOverlay, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { arrayMove } from '@dnd-kit/sortable'
 import { useTasks } from '../hooks/useTasks'
 import { KanbanColumn } from '../components/KanbanColumn'
+import { TaskCard } from '../components/TaskCard'
 
 export default function CapyDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -28,40 +29,33 @@ export default function CapyDashboard() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 3,
       },
     })
   )
 
-  const todoTasks = tasks.filter(task => task.status === 'todo')
-  const inProgressTasks = tasks.filter(task => task.status === 'inProgress')
-  const doneTasks = tasks.filter(task => task.status === 'done')
+  const tasksByStatus = useMemo(() => ({
+    todo: tasks.filter(task => task.status === 'todo'),
+    inProgress: tasks.filter(task => task.status === 'inProgress'),
+    done: tasks.filter(task => task.status === 'done')
+  }), [tasks])
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const { todo: todoTasks, inProgress: inProgressTasks, done: doneTasks } = tasksByStatus
+
+  const activeTask = useMemo(() => {
+    return activeId ? tasks.find(task => task.id === activeId) : null
+  }, [activeId, tasks])
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string)
-  }
+  }, [])
 
-  const handleDragOver = (event: DragOverEvent) => {
-    const { active, over } = event
+  const handleDragOver = useCallback((event: DragOverEvent) => {
+    // Only handle visual feedback during drag - no actual task moving
+    // This prevents the immediate "snapping" behavior
+  }, [])
 
-    if (!over) return
-
-    const activeId = active.id as string
-    const overId = over.id as string
-
-    if (activeId === overId) return
-
-    const activeTask = tasks.find(task => task.id === activeId)
-    if (!activeTask) return
-
-    const isOverAColumn = ['todo', 'inProgress', 'done'].includes(overId)
-    
-    if (isOverAColumn && activeTask.status !== overId) {
-      moveTask(activeId, overId as any)
-    }
-  }
-
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event
 
     if (!over) {
@@ -85,7 +79,14 @@ export default function CapyDashboard() {
       return
     }
 
-    if (overTask && activeTask.status === overTask.status) {
+    // Check if dropping over a column (status change)
+    const isOverAColumn = ['todo', 'inProgress', 'done'].includes(overId)
+    
+    if (isOverAColumn && activeTask.status !== overId) {
+      // Move task to different column
+      moveTask(activeId, overId as any)
+    } else if (overTask && activeTask.status === overTask.status) {
+      // Reorder within the same column
       const tasksInColumn = tasks.filter(task => task.status === activeTask.status)
       const activeIndex = tasksInColumn.findIndex(task => task.id === activeId)
       const overIndex = tasksInColumn.findIndex(task => task.id === overId)
@@ -95,11 +96,13 @@ export default function CapyDashboard() {
     }
 
     setActiveId(null)
-  }
+  }, [tasks, moveTask, moveTaskWithinColumn])
 
-  const totalTasks = tasks.length
-  const completedTasks = doneTasks.length
-  const inProgressTasksCount = inProgressTasks.length
+  const taskStats = useMemo(() => ({
+    total: tasks.length,
+    completed: doneTasks.length,
+    inProgress: inProgressTasks.length
+  }), [tasks.length, doneTasks.length, inProgressTasks.length])
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
@@ -155,6 +158,17 @@ export default function CapyDashboard() {
                 <CheckSquare className="w-4.5 h-4.5" />
                 {!sidebarCollapsed && <span>Tasks</span>}
               </button>
+            </li>
+            <li>
+              <a
+                href="/plans"
+                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors ${
+                  'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <span className="w-4.5 h-4.5 inline-flex items-center justify-center">📚</span>
+                {!sidebarCollapsed && <span>Plans</span>}
+              </a>
             </li>
             <li>
               <button
@@ -317,10 +331,10 @@ export default function CapyDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Total Tasks</p>
-                      <p className="text-2xl font-semibold text-gray-900">{totalTasks}</p>
+                      <p className="text-2xl font-semibold text-gray-900">{taskStats.total}</p>
                     </div>
                     <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
-                      <span className="text-blue-500 font-semibold">{totalTasks}</span>
+                      <span className="text-blue-500 font-semibold">{taskStats.total}</span>
                     </div>
                   </div>
                 </div>
@@ -328,10 +342,10 @@ export default function CapyDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">Completed</p>
-                      <p className="text-2xl font-semibold text-gray-900">{completedTasks}</p>
+                      <p className="text-2xl font-semibold text-gray-900">{taskStats.completed}</p>
                     </div>
                     <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center">
-                      <span className="text-green-500 font-semibold">{completedTasks}</span>
+                      <span className="text-green-500 font-semibold">{taskStats.completed}</span>
                     </div>
                   </div>
                 </div>
@@ -339,10 +353,10 @@ export default function CapyDashboard() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-gray-600">In Progress</p>
-                      <p className="text-2xl font-semibold text-gray-900">{inProgressTasksCount}</p>
+                      <p className="text-2xl font-semibold text-gray-900">{taskStats.inProgress}</p>
                     </div>
                     <div className="w-12 h-12 bg-yellow-50 rounded-lg flex items-center justify-center">
-                      <span className="text-yellow-500 font-semibold">{inProgressTasksCount}</span>
+                      <span className="text-yellow-500 font-semibold">{taskStats.inProgress}</span>
                     </div>
                   </div>
                 </div>
@@ -375,6 +389,13 @@ export default function CapyDashboard() {
                     taskCount={doneTasks.length}
                   />
                 </div>
+                <DragOverlay>
+                  {activeTask && (
+                    <div className="transform rotate-2 scale-105 shadow-2xl">
+                      <TaskCard task={activeTask} />
+                    </div>
+                  )}
+                </DragOverlay>
               </DndContext>
             </div>
           )}

@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { Task } from '../hooks/useTasks'
@@ -7,7 +8,7 @@ interface TaskCardProps {
   task: Task
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export const TaskCard = React.memo(function TaskCard({ task }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -19,8 +20,9 @@ export function TaskCard({ task }: TaskCardProps) {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: transition || 'transform 200ms ease, opacity 150ms ease',
+    opacity: isDragging ? 0.4 : 1,
+    zIndex: isDragging ? 999 : 1,
   }
 
   const getStatusColor = (status: string) => {
@@ -55,7 +57,7 @@ export function TaskCard({ task }: TaskCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`p-4 rounded-lg border-2 cursor-grab active:cursor-grabbing transition-all duration-200 hover:shadow-md ${getStatusColor(
+      className={`p-4 rounded-lg border-2 cursor-grab active:cursor-grabbing transition-all duration-150 hover:shadow-md ${getStatusColor(
         task.status
       )}`}
     >
@@ -84,4 +86,4 @@ export function TaskCard({ task }: TaskCardProps) {
       )}
     </div>
   )
-}
+})

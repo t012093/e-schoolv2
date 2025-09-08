@@ -1,4 +1,5 @@
 'use client'
+import React from 'react'
 import { useDroppable } from '@dnd-kit/core'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { Task, TaskStatus } from '../hooks/useTasks'
@@ -11,7 +12,7 @@ interface KanbanColumnProps {
   taskCount: number
 }
 
-export function KanbanColumn({ title, status, tasks, taskCount }: KanbanColumnProps) {
+export const KanbanColumn = React.memo(function KanbanColumn({ title, status, tasks, taskCount }: KanbanColumnProps) {
   const { isOver, setNodeRef } = useDroppable({
     id: status,
   })
@@ -43,8 +44,8 @@ export function KanbanColumn({ title, status, tasks, taskCount }: KanbanColumnPr
   }
 
   return (
-    <div className={`flex flex-col h-full rounded-lg border-2 transition-all duration-200 ${getColumnColor()} ${
-      isOver ? 'ring-2 ring-blue-400 ring-opacity-50' : ''
+    <div className={`flex flex-col h-full rounded-lg border-2 transition-all duration-150 ${getColumnColor()} ${
+      isOver ? 'ring-2 ring-blue-500 ring-opacity-75 bg-blue-50 border-blue-300' : ''
     }`}>
       <div className={`px-4 py-3 rounded-t-lg ${getHeaderColor()}`}>
         <div className="flex items-center justify-between">
@@ -59,7 +60,7 @@ export function KanbanColumn({ title, status, tasks, taskCount }: KanbanColumnPr
 
       <div
         ref={setNodeRef}
-        className="flex-1 p-4 min-h-[200px] transition-colors duration-200"
+        className="flex-1 p-4 min-h-[200px] transition-colors duration-150"
       >
         <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
           <div className="space-y-3">
@@ -70,11 +71,15 @@ export function KanbanColumn({ title, status, tasks, taskCount }: KanbanColumnPr
         </SortableContext>
 
         {tasks.length === 0 && (
-          <div className="flex items-center justify-center h-32 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-lg">
-            Drop tasks here
+          <div className={`flex items-center justify-center h-32 text-sm border-2 border-dashed rounded-lg transition-all duration-150 ${
+            isOver 
+              ? 'border-blue-300 bg-blue-50 text-blue-600' 
+              : 'border-gray-200 text-gray-400'
+          }`}>
+            {isOver ? 'Drop here!' : 'Drop tasks here'}
           </div>
         )}
       </div>
     </div>
   )
-}
+})

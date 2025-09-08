@@ -66,24 +66,27 @@ export function useTasks() {
 
   const moveTask = (taskId: string, newStatus: TaskStatus, newOrder?: number) => {
     setTasks(prevTasks => {
-      const updatedTasks = prevTasks.map(task => {
-        if (task.id === taskId) {
-          return {
-            ...task,
-            status: newStatus,
-            order: newOrder !== undefined ? newOrder : task.order
-          }
-        }
-        return task
-      })
+      const taskIndex = prevTasks.findIndex(task => task.id === taskId)
+      if (taskIndex === -1) return prevTasks
+
+      const updatedTasks = [...prevTasks]
+      const movedTask = { ...updatedTasks[taskIndex] }
+      
+      movedTask.status = newStatus
+      if (newOrder !== undefined) {
+        movedTask.order = newOrder
+      }
+      
+      updatedTasks[taskIndex] = movedTask
 
       // Reorder tasks within the new status if needed
       if (newOrder !== undefined) {
-        const tasksInNewStatus = updatedTasks.filter(t => t.status === newStatus)
+        const tasksInNewStatus = updatedTasks.filter(t => t.status === newStatus && t.id !== taskId)
         tasksInNewStatus.forEach((task, index) => {
-          if (task.id !== taskId) {
-            const adjustedIndex = index >= newOrder ? index + 1 : index
-            task.order = adjustedIndex
+          const adjustedIndex = index >= newOrder ? index + 1 : index
+          if (task.order !== adjustedIndex) {
+            const taskIdx = updatedTasks.findIndex(t => t.id === task.id)
+            updatedTasks[taskIdx] = { ...task, order: adjustedIndex }
           }
         })
       }
@@ -111,15 +114,22 @@ export function useTasks() {
 
   const moveTaskWithinColumn = (status: TaskStatus, reorderedTasks: Task[]) => {
     setTasks(prevTasks => {
-      // Update order values for reordered tasks
-      const tasksWithUpdatedOrder = reorderedTasks.map((task, index) => ({
-        ...task,
-        order: index
-      }))
+      const updatedTasks = [...prevTasks]
+      
+      // Create a map for quick lookup
+      const taskMap = new Map(reorderedTasks.map((task, index) => [task.id, index]))
+      
+      // Update only the tasks that need order changes
+      updatedTasks.forEach((task, index) => {
+        if (task.status === status && taskMap.has(task.id)) {
+          const newOrder = taskMap.get(task.id)!
+          if (task.order !== newOrder) {
+            updatedTasks[index] = { ...task, order: newOrder }
+          }
+        }
+      })
 
-      // Merge back with other tasks from different statuses
-      const otherTasks = prevTasks.filter(t => t.status !== status)
-      return [...otherTasks, ...tasksWithUpdatedOrder]
+      return updatedTasks
     })
   }
 
