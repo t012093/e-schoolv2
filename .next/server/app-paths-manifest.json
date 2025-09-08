@@ -1,7 +1,6 @@
 {
   "/page": "app/page.js",
   "/plan/roadmap/page": "app/plan/roadmap/page.js",
-  "/onboarding/page": "app/onboarding/page.js",
   "/plan/curriculum/page": "app/plan/curriculum/page.js",
   "/plan/sections/[id]/page": "app/plan/sections/[id]/page.js"
 }

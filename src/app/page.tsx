@@ -14,7 +14,9 @@ import {
   Settings,
   Bell,
   LayoutDashboard,
-  Calendar
+  Calendar,
+  Brain,
+  MessageCircle
 } from 'lucide-react'
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import Link from 'next/link'
@@ -23,14 +25,29 @@ import { arrayMove } from '@dnd-kit/sortable'
 import { useTasks } from '../hooks/useTasks'
 import { KanbanColumn } from '../components/KanbanColumn'
 import { TaskCard } from '../components/TaskCard'
+import { PersonalizedAssessment, ComprehensiveProfile } from '../components/PersonalizedAssessment'
+import { AICoachChat } from '../components/AICoachChat'
 
 export default function CapyDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeSection, setActiveSection] = useState('dashboard')
+  const [userProfile, setUserProfile] = useState<ComprehensiveProfile | null>(null)
   
   // Kanban functionality
   const { tasks, moveTask, moveTaskWithinColumn } = useTasks()
   const [activeId, setActiveId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // Load user profile for AI Coach
+    try {
+      const saved = localStorage.getItem('personalized.profile.v1')
+      if (saved) {
+        setUserProfile(JSON.parse(saved))
+      }
+    } catch (error) {
+      console.error('Failed to load profile:', error)
+    }
+  }, [])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -241,6 +258,35 @@ export default function CapyDashboard() {
               >
                 <Globe className="w-4.5 h-4.5" />
                 {!sidebarCollapsed && <span>Apps</span>}
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveSection('personalize')}
+                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors ${
+                  activeSection === 'personalize' 
+                    ? 'bg-blue-100 text-blue-900 font-medium' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <Brain className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>パーソナライズ</span>}
+                {userProfile && !sidebarCollapsed && (
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                )}
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => setActiveSection('ai-coach')}
+                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors ${
+                  activeSection === 'ai-coach' 
+                    ? 'bg-purple-100 text-purple-900 font-medium' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <MessageCircle className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>AIコーチ</span>}
               </button>
             </li>
           </ul>
@@ -889,6 +935,14 @@ export default function CapyDashboard() {
                 </DragOverlay>
               </DndContext>
             </div>
+          )}
+
+          {activeSection === 'personalize' && (
+            <PersonalizedAssessment />
+          )}
+
+          {activeSection === 'ai-coach' && (
+            <AICoachChat profile={userProfile || undefined} />
           )}
         </main>
       </div>
