@@ -73,19 +73,51 @@ export function AICoachChat({ profile }: AICoachChatProps) {
     let welcomeContent = 'こんにちは！私はあなた専用のAI学習コーチです。'
     
     if (profile) {
-      welcomeContent += `\n\n診断結果を確認しました：\n• ${profile.personality?.learningStyle || 'バランス型学習'}\n• ${profile.learningStyle?.primaryStyle === 'visual' ? '視覚的学習' : profile.learningStyle?.primaryStyle === 'auditory' ? '聴覚的学習' : '体感的学習'}が得意\n• ${profile.motivation?.motivationType === 'autonomous' ? '自律的動機' : profile.motivation?.motivationType === 'controlled' ? '統制的動機' : 'バランス型動機'}\n\nこれらの特性を活かした学習サポートを提供します！`
+      // パーソナライズされた挨拶
+      let personalityType = ''
+      if (profile.personality) {
+        const { extraversion, openness, conscientiousness } = profile.personality
+        if (extraversion > 70 && openness > 70) {
+          personalityType = '冒険家タイプ'
+        } else if (conscientiousness > 80) {
+          personalityType = '戦略家タイプ'
+        } else if (profile.motivation?.relatedness && profile.motivation.relatedness > 70) {
+          personalityType = 'サポータータイプ'
+        } else {
+          personalityType = 'バランサータイプ'
+        }
+      }
+
+      welcomeContent += `\n\n🎉 診断結果を確認しました！`
+      welcomeContent += `\n\nあなたは「${personalityType}」として識別され、以下の特徴があります：\n`
+      welcomeContent += `• ${profile.learningStyle?.primaryStyle === 'visual' ? '📊 視覚的学習が得意' : profile.learningStyle?.primaryStyle === 'auditory' ? '🎧 聴覚的学習が得意' : '✋ 体感的学習が得意'}\n`
+      welcomeContent += `• ${profile.motivation?.motivationType === 'autonomous' ? '🎯 自律的な学習スタイル' : profile.motivation?.motivationType === 'controlled' ? '🤝 サポート重視の学習スタイル' : '⚖️ バランス型の学習スタイル'}\n`
+      welcomeContent += `• ${profile.personality?.conscientiousness && profile.personality.conscientiousness > 70 ? '📋 高い計画性' : '🌟 柔軟性重視'}\n\n`
+      welcomeContent += `この診断結果を元に、あなたに最適な学習方法をご提案していきます。早速始めてみませんか？`
     } else {
-      welcomeContent += '\n\n効果的な学習サポートのため、まずはパーソナライズ診断を受けることをお勧めします。'
+      welcomeContent += '\n\n効果的な学習サポートのため、まずはパーソナライズ診断を受けることをお勧めします。診断を完了すると、あなただけの学習戦略を提案できます！'
     }
+
+    const suggestions = profile 
+      ? [
+          '今日から始められる学習計画を立てたい',
+          `${profile.learningStyle?.primaryStyle === 'visual' ? '図表を使った' : profile.learningStyle?.primaryStyle === 'auditory' ? '音声を活用した' : '実践的な'}学習方法を知りたい`,
+          'モチベーション維持のコツを教えて',
+          '私の弱点と改善方法を分析して'
+        ]
+      : [
+          'パーソナライズ診断を受ける',
+          '一般的な学習方法について相談する', 
+          'AI学習コーチの機能を詳しく知りたい'
+        ]
 
     return {
       id: Date.now().toString(),
       type: 'coach',
       content: welcomeContent,
       timestamp: new Date(),
-      suggestions: profile 
-        ? ['今日の学習計画を相談したい', '苦手分野の克服方法を知りたい', '学習モチベーションを上げたい']
-        : ['パーソナライズ診断を受ける', '学習方法について相談する', 'AI学習コーチの機能を知りたい']
+      suggestions,
+      learningTip: !!profile
     }
   }
 

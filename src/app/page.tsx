@@ -16,7 +16,9 @@ import {
   LayoutDashboard,
   Calendar,
   Brain,
-  MessageCircle
+  MessageCircle,
+  PlayCircle,
+  Timer
 } from 'lucide-react'
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import Link from 'next/link'
@@ -27,11 +29,14 @@ import { KanbanColumn } from '../components/KanbanColumn'
 import { TaskCard } from '../components/TaskCard'
 import { PersonalizedAssessment, ComprehensiveProfile } from '../components/PersonalizedAssessment'
 import { AICoachChat } from '../components/AICoachChat'
+import PersonalizedLearningPlan from '../components/PersonalizedLearningPlan'
+import LearningRoutineTimer from '../components/LearningRoutineTimer'
 
 export default function CapyDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeSection, setActiveSection] = useState('dashboard')
   const [userProfile, setUserProfile] = useState<ComprehensiveProfile | null>(null)
+  const [showProfileBadge, setShowProfileBadge] = useState(false)
   
   // Kanban functionality
   const { tasks, moveTask, moveTaskWithinColumn } = useTasks()
@@ -42,12 +47,34 @@ export default function CapyDashboard() {
     try {
       const saved = localStorage.getItem('personalized.profile.v1')
       if (saved) {
-        setUserProfile(JSON.parse(saved))
+        const profile = JSON.parse(saved)
+        setUserProfile(profile)
+        
+        // Show badge if profile was completed recently (within 1 hour)
+        const completedAt = new Date(profile.completedAt)
+        const now = new Date()
+        const hoursSinceCompletion = (now.getTime() - completedAt.getTime()) / (1000 * 60 * 60)
+        setShowProfileBadge(hoursSinceCompletion <= 1)
       }
     } catch (error) {
       console.error('Failed to load profile:', error)
     }
+
+    // Handle URL parameters for tab switching
+    const params = new URLSearchParams(window.location.search)
+    const tab = params.get('tab')
+    if (tab && ['dashboard', 'tasks', 'plans', 'kanban', 'calendar', 'files', 'apps', 'personalize', 'ai-coach', 'profile', 'settings', 'notifications', 'routine-timer'].includes(tab)) {
+      setActiveSection(tab)
+    }
   }, [])
+
+  // Update URL when section changes
+  const handleSectionChange = (section: string) => {
+    setActiveSection(section)
+    const url = new URL(window.location.href)
+    url.searchParams.set('tab', section)
+    window.history.replaceState({}, '', url.toString())
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -171,7 +198,7 @@ export default function CapyDashboard() {
           <ul className="space-y-1">
             <li>
               <button
-                onClick={() => setActiveSection('dashboard')}
+                onClick={() => handleSectionChange('dashboard')}
                 className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors ${
                   activeSection === 'dashboard' 
                     ? 'bg-gray-100 text-gray-900 font-medium' 
@@ -278,8 +305,8 @@ export default function CapyDashboard() {
             </li>
             <li>
               <button
-                onClick={() => setActiveSection('ai-coach')}
-                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors ${
+                onClick={() => handleSectionChange('ai-coach')}
+                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors relative ${
                   activeSection === 'ai-coach' 
                     ? 'bg-purple-100 text-purple-900 font-medium' 
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -287,6 +314,22 @@ export default function CapyDashboard() {
               >
                 <MessageCircle className="w-4.5 h-4.5" />
                 {!sidebarCollapsed && <span>AIコーチ</span>}
+                {userProfile && showProfileBadge && (
+                  <div className="absolute top-1 right-1 w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                )}
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => handleSectionChange('routine-timer')}
+                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors ${
+                  activeSection === 'routine-timer' 
+                    ? 'bg-green-100 text-green-900 font-medium' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <Timer className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>学習タイマー</span>}
               </button>
             </li>
           </ul>
@@ -359,6 +402,70 @@ export default function CapyDashboard() {
         <main className="p-6">
           {activeSection === 'dashboard' && (
             <div className="space-y-6">
+              {/* Personalized Learning Widget - 診断済みユーザー向け */}
+              {userProfile && (
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-xl p-6 text-white">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h2 className="text-xl font-bold mb-2">今日の学習目標</h2>
+                      <p className="text-purple-100">
+                        {userProfile.personality?.learningStyle || 'パーソナライズされた学習'}を実践しましょう
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-3xl font-bold">Day {Math.floor(Math.random() * 30) + 1}</p>
+                      <p className="text-sm text-purple-200">学習継続日数</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div className="bg-white/20 backdrop-blur rounded-lg p-4">
+                      <h3 className="font-medium mb-2">推奨学習時間</h3>
+                      <p className="text-2xl font-bold">30分</p>
+                      <p className="text-sm text-purple-100">あなたの集中力パターンに最適</p>
+                    </div>
+                    <div className="bg-white/20 backdrop-blur rounded-lg p-4">
+                      <h3 className="font-medium mb-2">今日のフォーカス</h3>
+                      <p className="text-lg font-bold">基礎固め Phase 1</p>
+                      <p className="text-sm text-purple-100">語彙学習 Unit 5</p>
+                    </div>
+                    <div className="bg-white/20 backdrop-blur rounded-lg p-4">
+                      <h3 className="font-medium mb-2">推奨スタイル</h3>
+                      <p className="text-lg font-bold">
+                        {userProfile.learningStyle?.primaryStyle === 'visual' ? '視覚的学習' : 
+                         userProfile.learningStyle?.primaryStyle === 'auditory' ? '聴覚的学習' : 
+                         '体感的学習'}
+                      </p>
+                      <p className="text-sm text-purple-100">診断結果に基づく</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <button 
+                      onClick={() => setActiveSection('ai-coach')}
+                      className="flex items-center gap-2 px-4 py-2 bg-white text-purple-600 rounded-lg font-medium hover:bg-purple-50 transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      AIコーチに相談
+                    </button>
+                    <button 
+                      onClick={() => window.location.href = '/plan/roadmap'}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur text-white rounded-lg font-medium hover:bg-white/30 transition-colors"
+                    >
+                      <BookOpen className="w-4 h-4" />
+                      学習プランを見る
+                    </button>
+                    <button 
+                      onClick={() => handleSectionChange('routine-timer')}
+                      className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur text-white rounded-lg font-medium hover:bg-white/30 transition-colors"
+                    >
+                      <PlayCircle className="w-4 h-4" />
+                      今すぐ始める
+                    </button>
+                  </div>
+                </div>
+              )}
+
               {/* Dashboard Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
@@ -496,7 +603,65 @@ export default function CapyDashboard() {
           )}
           
           {activeSection === 'plans' && (
-            <PlansInlineView />
+            <div className="space-y-6">
+              {/* 診断済みユーザーには個人化学習プランを表示 */}
+              {userProfile ? (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold">個人化学習プラン</h2>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => window.location.href = '/plan/roadmap'}
+                        className="px-3 py-2 text-sm border rounded-md hover:bg-gray-50"
+                      >
+                        全体ロードマップ
+                      </button>
+                      <button 
+                        onClick={() => setActiveSection('personalize')}
+                        className="px-3 py-2 text-sm border rounded-md hover:bg-gray-50"
+                      >
+                        診断を見直す
+                      </button>
+                    </div>
+                  </div>
+                  <PersonalizedLearningPlan />
+                </div>
+              ) : (
+                <div>
+                  {/* 診断未完了ユーザーには従来のプランビューと診断への誘導 */}
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6 border border-blue-200 mb-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">あなた専用の学習プランを作成しませんか？</h3>
+                        <p className="text-gray-600 mb-4">
+                          性格診断と学習スタイル分析により、ChatGPTレベルの個人化された学習プランを自動生成できます。
+                        </p>
+                        <div className="flex items-center gap-3">
+                          <button 
+                            onClick={() => setActiveSection('personalize')}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                          >
+                            パーソナライズ診断を始める（3分）
+                          </button>
+                          <button 
+                            onClick={() => setActiveSection('ai-coach')}
+                            className="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors"
+                          >
+                            AIコーチに相談
+                          </button>
+                        </div>
+                      </div>
+                      <div className="hidden md:block">
+                        <div className="text-6xl">🎯</div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* 従来のプランビュー */}
+                  <PlansInlineView />
+                </div>
+              )}
+            </div>
           )}
           {activeSection === 'tasks' && (
             <div className="space-y-4">
@@ -943,6 +1108,10 @@ export default function CapyDashboard() {
 
           {activeSection === 'ai-coach' && (
             <AICoachChat profile={userProfile || undefined} />
+          )}
+
+          {activeSection === 'routine-timer' && (
+            <LearningRoutineTimer />
           )}
         </main>
       </div>

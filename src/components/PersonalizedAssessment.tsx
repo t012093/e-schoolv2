@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { CheckCircle, Clock, ArrowRight, RotateCcw, Brain, BookOpen, Target, Sparkles } from 'lucide-react'
+import { CheckCircle, Clock, ArrowRight, RotateCcw, Brain, BookOpen, Target, Sparkles, MessageCircle, Rocket, Share2, Download, PlayCircle } from 'lucide-react'
 import { PersonalityAssessment, PersonalityResult } from './PersonalityAssessment'
 import { LearningStyleAssessment, LearningStyleResult } from './LearningStyleAssessment'
 import { MotivationAnalysis, MotivationResult } from './MotivationAnalysis'
@@ -611,13 +611,83 @@ function ComprehensiveResults({ profile, onReset }: { profile: ComprehensiveProf
           </div>
         </div>
 
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg text-center">
-          <p className="text-sm text-gray-600 mb-2">
-            診断完了日: {new Date(profile.completedAt).toLocaleDateString('ja-JP')}
-          </p>
-          <p className="text-sm text-gray-700">
-            この結果はAIコーチが学習サポートをパーソナライズするために活用されます
-          </p>
+        {/* Next Steps - 次のアクション */}
+        <div className="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-200">
+          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+            <Rocket className="w-5 h-5 text-indigo-600" />
+            次のステップ
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <button
+              onClick={() => window.location.href = '/?tab=ai-coach'}
+              className="flex flex-col items-center gap-3 p-4 bg-white rounded-lg border-2 border-purple-200 hover:border-purple-400 hover:shadow-lg transition-all group"
+            >
+              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <MessageCircle className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-900">AIコーチと始める</p>
+                <p className="text-xs text-gray-600 mt-1">パーソナライズされた学習を開始</p>
+              </div>
+              <div className="px-3 py-1 bg-purple-600 text-white text-xs rounded-full">おすすめ</div>
+            </button>
+
+            <button
+              onClick={() => window.location.href = '/plan/roadmap'}
+              className="flex flex-col items-center gap-3 p-4 bg-white rounded-lg border-2 border-blue-200 hover:border-blue-400 hover:shadow-lg transition-all group"
+            >
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <BookOpen className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-900">学習プランを見る</p>
+                <p className="text-xs text-gray-600 mt-1">あなた専用のロードマップ</p>
+              </div>
+            </button>
+
+            <button
+              onClick={() => window.location.href = '/?tab=dashboard'}
+              className="flex flex-col items-center gap-3 p-4 bg-white rounded-lg border-2 border-green-200 hover:border-green-400 hover:shadow-lg transition-all group"
+            >
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                <PlayCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="text-center">
+                <p className="font-medium text-gray-900">最初のレッスン</p>
+                <p className="text-xs text-gray-600 mt-1">今すぐ学習を始める</p>
+              </div>
+            </button>
+          </div>
+
+          <div className="bg-white/80 rounded-lg p-4">
+            <p className="text-sm text-gray-700 mb-2">
+              <strong>💡 ヒント：</strong>まずはAIコーチとの対話から始めることをおすすめします。
+              あなたの診断結果を踏まえて、最適な学習方法をご提案します。
+            </p>
+            <div className="flex items-center gap-2 text-xs text-gray-600">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              <span>診断結果は自動的にAIコーチに共有されています</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Share & Export */}
+        <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-gray-600">
+              診断完了日: {new Date(profile.completedAt).toLocaleDateString('ja-JP')}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white transition-colors">
+              <Share2 className="w-4 h-4" />
+              シェア
+            </button>
+            <button className="flex items-center gap-2 px-3 py-1.5 text-sm border border-gray-300 rounded-lg hover:bg-white transition-colors">
+              <Download className="w-4 h-4" />
+              PDF保存
+            </button>
+          </div>
         </div>
       </div>
     </div>
