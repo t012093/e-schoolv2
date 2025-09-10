@@ -18,7 +18,8 @@ import {
   Brain,
   MessageCircle,
   PlayCircle,
-  Timer
+  Timer,
+  Heart
 } from 'lucide-react'
 import { useState, useMemo, useCallback, useEffect } from 'react'
 import Link from 'next/link'
@@ -31,12 +32,15 @@ import { PersonalizedAssessment, ComprehensiveProfile } from '../components/Pers
 import { AICoachChat } from '../components/AICoachChat'
 import PersonalizedLearningPlan from '../components/PersonalizedLearningPlan'
 import LearningRoutineTimer from '../components/LearningRoutineTimer'
+import { HealthCheckModal, HealthCheckData } from '../components/HealthCheckModal'
 
 export default function CapyDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [activeSection, setActiveSection] = useState('dashboard')
   const [userProfile, setUserProfile] = useState<ComprehensiveProfile | null>(null)
   const [showProfileBadge, setShowProfileBadge] = useState(false)
+  const [showHealthCheck, setShowHealthCheck] = useState(false)
+  const [hasNewHealthCheck, setHasNewHealthCheck] = useState(false)
   
   // Kanban functionality
   const { tasks, moveTask, moveTaskWithinColumn } = useTasks()
@@ -60,10 +64,25 @@ export default function CapyDashboard() {
       console.error('Failed to load profile:', error)
     }
 
+    // Check if should show health check modal (12 hours since last check)
+    const lastCheck = localStorage.getItem('health.lastCheck')
+    const lastSkipped = localStorage.getItem('health.lastSkipped')
+    const now = Date.now()
+    
+    if (!lastCheck || now - new Date(lastCheck).getTime() > 12 * 60 * 60 * 1000) {
+      if (!lastSkipped || now - new Date(lastSkipped).getTime() > 6 * 60 * 60 * 1000) {
+        setHasNewHealthCheck(true)
+        // Auto-show modal on dashboard
+        if (window.location.search.includes('tab=dashboard') || !window.location.search) {
+          setTimeout(() => setShowHealthCheck(true), 2000)
+        }
+      }
+    }
+
     // Handle URL parameters for tab switching
     const params = new URLSearchParams(window.location.search)
     const tab = params.get('tab')
-    if (tab && ['dashboard', 'tasks', 'plans', 'kanban', 'calendar', 'files', 'apps', 'personalize', 'ai-coach', 'profile', 'settings', 'notifications', 'routine-timer'].includes(tab)) {
+    if (tab && ['dashboard', 'tasks', 'plans', 'kanban', 'calendar', 'files', 'apps', 'personalize', 'ai-coach', 'profile', 'settings', 'notifications', 'routine-timer', 'health'].includes(tab)) {
       setActiveSection(tab)
     }
   }, [])
@@ -153,6 +172,17 @@ export default function CapyDashboard() {
     completed: doneTasks.length,
     inProgress: inProgressTasks.length
   }), [tasks.length, doneTasks.length, inProgressTasks.length])
+
+  const handleHealthCheckComplete = (data: HealthCheckData) => {
+    // Save health data
+    const existing = localStorage.getItem('health.records')
+    const records = existing ? JSON.parse(existing) : []
+    records.push(data)
+    localStorage.setItem('health.records', JSON.stringify(records))
+    localStorage.setItem('health.lastCheck', new Date().toISOString())
+    setHasNewHealthCheck(false)
+    setShowHealthCheck(false)
+  }
 
   return (
     <div className="flex min-h-screen w-full bg-gray-50">
@@ -330,6 +360,29 @@ export default function CapyDashboard() {
               >
                 <Timer className="w-4.5 h-4.5" />
                 {!sidebarCollapsed && <span>学習タイマー</span>}
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  if (activeSection === 'health') {
+                    window.location.href = '/health'
+                  } else {
+                    handleSectionChange('health')
+                    window.location.href = '/health'
+                  }
+                }}
+                className={`flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors relative ${
+                  activeSection === 'health' 
+                    ? 'bg-red-100 text-red-900 font-medium' 
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                }`}
+              >
+                <Heart className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>体調管理</span>}
+                {hasNewHealthCheck && !sidebarCollapsed && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                )}
               </button>
             </li>
           </ul>
@@ -1113,8 +1166,32 @@ export default function CapyDashboard() {
           {activeSection === 'routine-timer' && (
             <LearningRoutineTimer />
           )}
+
+          {activeSection === 'health' && (
+            <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+              <Heart className="w-16 h-16 text-red-500 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold mb-2">体調管理ページへ移動中...</h2>
+              <p className="text-gray-600 mb-4">健康状態をトラッキングして学習効率を最適化しましょう</p>
+              <button
+                onClick={() => window.location.href = '/health'}
+                className="px-6 py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:from-pink-600 hover:to-red-600"
+              >
+                体調管理ページを開く
+              </button>
+            </div>
+          )}
         </main>
       </div>
+
+      {/* Health Check Modal */}
+      <HealthCheckModal
+        isOpen={showHealthCheck}
+        onClose={() => {
+          setShowHealthCheck(false)
+          localStorage.setItem('health.lastSkipped', new Date().toISOString())
+        }}
+        onComplete={handleHealthCheckComplete}
+      />
     </div>
   )
 }
