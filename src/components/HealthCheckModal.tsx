@@ -99,8 +99,8 @@ export function HealthCheckModal({ isOpen, onClose, onComplete }: HealthCheckMod
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white p-6">
           <div className="flex items-center justify-between">
@@ -133,7 +133,7 @@ export function HealthCheckModal({ isOpen, onClose, onComplete }: HealthCheckMod
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 200px)' }}>
+        <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(85vh - 240px)' }}>
           {step === 1 && (
             <div className="space-y-6">
               {/* 体調 */}
@@ -448,8 +448,8 @@ export function HealthCheckModal({ isOpen, onClose, onComplete }: HealthCheckMod
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-gray-200 bg-gray-50">
-          <div className="flex justify-between">
+        <div className="p-4 border-t border-gray-200 bg-gray-50">
+          <div className="flex justify-between items-center">
             <button
               onClick={handleSkip}
               className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"

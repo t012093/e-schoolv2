@@ -9,15 +9,30 @@ import {
   TrendingUp,
   Calendar,
   ChevronRight,
+  ChevronDown,
   Download,
   Filter,
   Droplets,
   Coffee,
-  AlertCircle
+  AlertCircle,
+  Search,
+  PanelLeft,
+  FileText,
+  Globe,
+  CheckSquare,
+  BarChart3,
+  BookOpen,
+  User,
+  Settings,
+  Bell,
+  LayoutDashboard,
+  MessageCircle,
+  Timer
 } from 'lucide-react'
 import { HealthCheckModal, HealthCheckData } from '../../components/HealthCheckModal'
 
 export default function HealthPage() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [showHealthCheck, setShowHealthCheck] = useState(false)
   const [healthData, setHealthData] = useState<HealthCheckData[]>([])
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month' | 'year'>('week')
@@ -62,27 +77,206 @@ export default function HealthPage() {
   const averages = getAverages()
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-red-500 rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">体調管理</h1>
-              <p className="text-sm text-gray-500">健康状態をトラッキングして学習効率を最適化</p>
-            </div>
+    <div className="flex min-h-screen w-full bg-gray-50">
+      {/* Sidebar */}
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-white border-r border-gray-200 transition-all duration-200 flex flex-col`}>
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between h-12 px-2.5 pt-2">
+          <div className={`${sidebarCollapsed ? 'hidden' : 'flex-1'}`}>
+            <button className="flex items-center gap-2 px-3 py-2 text-sm font-medium bg-transparent hover:bg-gray-50 rounded w-full justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-gray-200 rounded-sm"></div>
+                {!sidebarCollapsed && <span className="text-gray-600">Select project...</span>}
+              </div>
+              {!sidebarCollapsed && <ChevronDown className="w-4 h-4 opacity-50" />}
+            </button>
           </div>
-          <button
-            onClick={() => setShowHealthCheck(true)}
-            className="px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:from-pink-600 hover:to-red-600 transition-all"
+          
+          <button 
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 rounded-md transition-colors"
           >
-            今日の体調を記録
+            <PanelLeft className="w-4 h-4" />
           </button>
         </div>
-      </header>
+
+        {/* Search Button */}
+        <div className="px-2.5 mb-2">
+          <button className="flex items-center gap-2.5 w-full p-2.5 bg-white hover:bg-gray-50 border border-gray-200 rounded-md shadow-sm">
+            <Search className="w-4.5 h-4.5" />
+            {!sidebarCollapsed && (
+              <>
+                <span className="flex-1 text-left text-sm">Search</span>
+                <kbd className="inline-flex h-5 items-center gap-1 rounded border bg-gray-50 px-1.5 text-xs font-mono text-gray-500">
+                  <span>⌘</span>K
+                </kbd>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 px-2.5">
+          <ul className="space-y-1">
+            <li>
+              <a
+                href="/"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <LayoutDashboard className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Dashboard</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=tasks"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <CheckSquare className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Tasks</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=plans"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <BookOpen className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Plans</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=kanban"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <BarChart3 className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Kanban Board</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=calendar"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Calendar className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Calendar</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=files"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <FileText className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Files</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=apps"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Globe className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Apps</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=personalize"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Brain className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>パーソナライズ</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=ai-coach"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <MessageCircle className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>AIコーチ</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=routine-timer"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Timer className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>学習タイマー</span>}
+              </a>
+            </li>
+            <li>
+              <button
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors bg-red-100 text-red-900 font-medium"
+              >
+                <Heart className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>体調管理</span>}
+              </button>
+            </li>
+          </ul>
+
+          {/* Divider */}
+          <div className="my-4 border-t border-gray-200"></div>
+
+          {/* User & Settings Section */}
+          <ul className="space-y-1">
+            <li>
+              <a
+                href="/?tab=notifications"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors relative text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Bell className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Notifications</span>}
+                <div className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></div>
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=profile"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <User className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Profile</span>}
+              </a>
+            </li>
+            <li>
+              <a
+                href="/?tab=settings"
+                className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              >
+                <Settings className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>Settings</span>}
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 bg-gray-50">
+        {/* Header */}
+        <header className="bg-white border-b border-gray-200 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-red-500 rounded-lg flex items-center justify-center">
+                <Heart className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">体調管理</h1>
+                <p className="text-sm text-gray-500">健康状態をトラッキングして学習効率を最適化</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowHealthCheck(true)}
+              className="px-4 py-2 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-lg hover:from-pink-600 hover:to-red-600 transition-all"
+            >
+              今日の体調を記録
+            </button>
+          </div>
+        </header>
 
       <main className="p-6 space-y-6">
         {/* Today's Summary */}
@@ -296,6 +490,7 @@ export default function HealthPage() {
           </div>
         </div>
       </main>
+      </div>
 
       {/* Health Check Modal */}
       <HealthCheckModal

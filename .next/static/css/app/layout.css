@@ -707,8 +707,8 @@ video {
 .h-full {
   height: 100%;
 }
-.max-h-\[90vh\] {
-  max-height: 90vh;
+.max-h-\[85vh\] {
+  max-height: 85vh;
 }
 .min-h-\[200px\] {
   min-height: 200px;
