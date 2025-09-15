@@ -1,4 +1,4 @@
-// File: /Users/naoyakusunoki/Desktop/test/capy-ui/src/app/health/page.tsx
+// File: /Volumes/Extreme SSD/desktop/test/capy-ui/src/app/health/page.tsx
 import * as entry from '../../../../src/app/health/page.js'
 import type { ResolvingMetadata } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
