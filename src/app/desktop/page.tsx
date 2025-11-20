@@ -12,14 +12,10 @@ import ProfileView from '@/components/desktop/ProfileView'
 export default function DesktopPage() {
   const [activeView, setActiveView] = useState('dashboard')
 
-  const handleNavigate = (view: string) => {
-    setActiveView(view)
-  }
-
   const renderView = () => {
     switch (activeView) {
       case 'dashboard':
-        return <Dashboard onNavigate={handleNavigate} />
+        return <Dashboard />
       case 'tasks':
         return <TasksView />
       case 'learning':
@@ -31,7 +27,7 @@ export default function DesktopPage() {
       case 'profile':
         return <ProfileView />
       default:
-        return <Dashboard onNavigate={handleNavigate} />
+        return <Dashboard />
     }
   }
 

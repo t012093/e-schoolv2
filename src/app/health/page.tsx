@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Heart, 
-  Moon, 
-  Brain, 
-  Activity, 
+import {
+  Heart,
+  Moon,
+  Brain,
+  Activity,
   TrendingUp,
   Calendar,
   ChevronRight,
@@ -165,11 +165,11 @@ export default function HealthPage() {
             </li>
             <li>
               <a
-                href="/?tab=files"
+                href="/?tab=contents"
                 className="flex items-center gap-2.5 w-full p-2.5 text-sm rounded-md transition-colors text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               >
-                <FileText className="w-4.5 h-4.5" />
-                {!sidebarCollapsed && <span>Files</span>}
+                <BookOpen className="w-4.5 h-4.5" />
+                {!sidebarCollapsed && <span>コンテンツ</span>}
               </a>
             </li>
             <li>
