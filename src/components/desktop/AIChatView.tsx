@@ -139,52 +139,98 @@ export default function AIChatView() {
   }
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-b from-blue-50/30 to-white">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-purple-50/30 via-blue-50/20 to-pink-50/30">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200/50 p-6 shadow-sm">
-        <div className="max-w-[1200px] mx-auto flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
-            <Sparkles className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">AIコーチ</h1>
-            <p className="text-sm text-gray-500">
-              {profile ? `${profile.aiCoachProfile}のあなたをサポート` : 'いつでも相談してください'}
-            </p>
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200/50 p-8 shadow-lg">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-purple-400 via-blue-500 to-pink-500 flex items-center justify-center shadow-xl animate-pulse">
+                <Sparkles className="w-10 h-10 text-white" />
+              </div>
+              {profile && (
+                <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center shadow-lg border-2 border-white">
+                  <span className="text-white text-xs font-bold">✓</span>
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">AIコーチ</h1>
+              <p className="text-gray-600">
+                {profile ? `🎯 ${profile.aiCoachProfile}のあなたをサポート` : '💬 いつでも相談してください'}
+              </p>
+            </div>
+            {profile && (
+              <div className="flex gap-3">
+                <div className="px-4 py-2 bg-gradient-to-br from-purple-100 to-blue-100 rounded-full text-sm font-medium text-purple-700 shadow-sm">
+                  {profile.learningStyle?.primaryStyle === 'visual' ? '👁️ 視覚的' :
+                   profile.learningStyle?.primaryStyle === 'auditory' ? '👂 聴覚的' : '✋ 体感的'}
+                </div>
+                <div className="px-4 py-2 bg-gradient-to-br from-green-100 to-blue-100 rounded-full text-sm font-medium text-green-700 shadow-sm">
+                  {profile.motivation?.motivationType === 'autonomous' ? '🎯 自律型' :
+                   profile.motivation?.motivationType === 'controlled' ? '🤝 サポート型' : '⚖️ バランス型'}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-8">
-        <div className="max-w-[1200px] mx-auto space-y-6">
+        <div className="max-w-[1200px] mx-auto space-y-8">
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
             >
+              {message.type === 'ai' && (
+                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+              )}
               <div
-                className={`max-w-[70%] rounded-3xl px-6 py-4 ${
+                className={`max-w-[65%] ${
                   message.type === 'user'
-                    ? 'bg-gradient-to-r from-green-400 to-blue-500 text-white shadow-md'
-                    : 'bg-gradient-to-br from-white to-gray-50/50 border border-gray-100/50 text-gray-900 shadow-sm'
+                    ? 'order-2'
+                    : 'order-1'
                 }`}
               >
-                <p className="text-lg leading-relaxed whitespace-pre-wrap">{message.text}</p>
-                <p className={`text-sm mt-2 ${
-                  message.type === 'user' ? 'text-white/70' : 'text-gray-400'
-                }`}>
-                  {message.time}
-                </p>
+                <div
+                  className={`rounded-3xl px-7 py-5 shadow-xl hover:shadow-2xl transition-all ${
+                    message.type === 'user'
+                      ? 'bg-gradient-to-br from-green-400 via-blue-500 to-purple-500 text-white'
+                      : 'bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 border-2 border-purple-100/50 text-gray-900'
+                  }`}
+                >
+                  <p className="text-lg leading-relaxed whitespace-pre-wrap">{message.text}</p>
+                  <p className={`text-xs mt-3 ${
+                    message.type === 'user' ? 'text-white/60' : 'text-gray-400'
+                  }`}>
+                    {message.time}
+                  </p>
+                </div>
               </div>
+              {message.type === 'user' && (
+                <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shadow-lg">
+                  <span className="text-2xl">👤</span>
+                </div>
+              )}
             </div>
           ))}
           {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-gradient-to-br from-white to-gray-50/50 border border-gray-100/50 rounded-3xl px-6 py-4 shadow-sm">
-                <div className="flex items-center gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-                  <span className="text-gray-600">入力中...</span>
+            <div className="flex gap-4 justify-start">
+              <div className="flex-shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div className="bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 border-2 border-purple-100/50 rounded-3xl px-7 py-5 shadow-xl">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                    <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.15s' }}></div>
+                    <div className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0.3s' }}></div>
+                  </div>
+                  <span className="text-gray-600 font-medium">考え中...</span>
                 </div>
               </div>
             </div>
@@ -194,42 +240,60 @@ export default function AIChatView() {
       </div>
 
       {/* Quick Replies */}
-      <div className="px-8 py-4 border-t border-gray-200/50">
-        <div className="max-w-[1200px] mx-auto flex gap-3 overflow-x-auto pb-2">
-          {quickReplies.map((reply, index) => (
-            <button
-              key={index}
-              onClick={() => setInputText(reply)}
-              className="flex-shrink-0 px-5 py-3 bg-gradient-to-br from-white to-gray-50/50 border border-gray-100/50 rounded-full text-sm text-gray-700 hover:shadow-md shadow-sm transition-all"
-            >
-              {reply}
-            </button>
-          ))}
+      {!isLoading && messages.length > 0 && (
+        <div className="px-8 py-5 bg-gradient-to-r from-purple-50/30 via-blue-50/30 to-pink-50/30 border-t border-gray-200/30">
+          <div className="max-w-[1200px] mx-auto">
+            <p className="text-xs font-semibold text-gray-500 mb-3 tracking-wide uppercase">クイック返信</p>
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
+              {quickReplies.map((reply, index) => (
+                <button
+                  key={index}
+                  onClick={() => setInputText(reply)}
+                  className="flex-shrink-0 px-6 py-3 bg-white rounded-full text-sm font-medium text-gray-700 hover:text-purple-700 border-2 border-purple-100/50 hover:border-purple-300 shadow-md hover:shadow-xl transition-all hover:scale-105 group"
+                >
+                  <span className="flex items-center gap-2">
+                    <span>💬</span>
+                    {reply}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Input */}
-      <div className="bg-white border-t border-gray-200/50 p-6 shadow-lg">
-        <div className="max-w-[1200px] mx-auto flex gap-4">
-          <input
-            type="text"
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="メッセージを入力..."
-            className="flex-1 px-6 py-4 bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-full focus:outline-none focus:ring-2 focus:ring-green-400 focus:shadow-md shadow-sm text-gray-900 transition-all border border-gray-100/50 text-lg"
-          />
-          <button
-            onClick={handleSend}
-            disabled={isLoading || !inputText.trim()}
-            className="w-14 h-14 rounded-full bg-gradient-to-r from-green-400 to-blue-500 flex items-center justify-center text-white shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? (
-              <Loader2 className="w-6 h-6 animate-spin" />
-            ) : (
-              <Send className="w-6 h-6" />
-            )}
-          </button>
+      <div className="bg-white/90 backdrop-blur-sm border-t-2 border-purple-100/50 p-8 shadow-2xl">
+        <div className="max-w-[1200px] mx-auto">
+          <div className="flex gap-4 items-end">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                placeholder="メッセージを入力してください..."
+                className="w-full px-8 py-5 bg-gradient-to-br from-gray-50 to-white rounded-3xl focus:outline-none focus:ring-4 focus:ring-purple-200/50 shadow-lg border-2 border-gray-100 focus:border-purple-300 text-gray-900 transition-all text-lg placeholder:text-gray-400"
+              />
+            </div>
+            <button
+              onClick={handleSend}
+              disabled={isLoading || !inputText.trim()}
+              className="w-16 h-16 rounded-3xl bg-gradient-to-br from-purple-400 via-blue-500 to-pink-500 flex items-center justify-center text-white shadow-xl hover:shadow-2xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 group"
+            >
+              {isLoading ? (
+                <Loader2 className="w-7 h-7 animate-spin" />
+              ) : (
+                <Send className="w-7 h-7 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              )}
+            </button>
+          </div>
+          {profile && (
+            <div className="mt-4 flex items-center gap-2 text-xs text-gray-500">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+              <span>パーソナライズド AIコーチが対応中</span>
+            </div>
+          )}
         </div>
       </div>
     </div>

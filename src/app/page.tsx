@@ -1,46 +1,30 @@
 'use client'
 
-import { useState } from 'react'
-import Sidebar from '@/components/desktop/Sidebar'
-import Dashboard from '@/components/desktop/Dashboard'
-import TasksView from '@/components/desktop/TasksView'
-import LearningView from '@/components/desktop/LearningView'
-import WellbeingView from '@/components/desktop/WellbeingView'
-import AIChatView from '@/components/desktop/AIChatView'
-import ProfileView from '@/components/desktop/ProfileView'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
-export default function DesktopPage() {
-  const [activeView, setActiveView] = useState('dashboard')
+export default function HomePage() {
+  const router = useRouter()
 
-  const handleNavigate = (view: string) => {
-    setActiveView(view)
-  }
+  useEffect(() => {
+    // デバイスタイプを検知
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+                     window.innerWidth <= 768
 
-  const renderView = () => {
-    switch (activeView) {
-      case 'dashboard':
-        return <Dashboard onNavigate={handleNavigate} />
-      case 'tasks':
-        return <TasksView />
-      case 'learning':
-        return <LearningView />
-      case 'wellbeing':
-        return <WellbeingView />
-      case 'ai':
-        return <AIChatView />
-      case 'profile':
-        return <ProfileView />
-      default:
-        return <Dashboard onNavigate={handleNavigate} />
+    // 適切なページにリダイレクト
+    if (isMobile) {
+      router.push('/mobile')
+    } else {
+      router.push('/desktop')
     }
-  }
+  }, [router])
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 overflow-hidden">
-      <Sidebar activeView={activeView} onViewChange={setActiveView} />
-      <main className="flex-1 overflow-y-auto">
-        {renderView()}
-      </main>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-6xl mb-4 animate-pulse">🔄</div>
+        <p className="text-gray-600">リダイレクト中...</p>
+      </div>
     </div>
   )
 }

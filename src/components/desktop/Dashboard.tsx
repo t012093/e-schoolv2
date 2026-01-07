@@ -83,13 +83,13 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
       {/* Main Content Grid */}
       <div className="grid grid-cols-2 gap-6">
         {/* Personalized Section or Today's Learning */}
-        {profile ? (
+        {profile && profile.learningPlan ? (
           <div className="bg-gradient-to-br from-purple-400 to-pink-500 rounded-3xl p-8 shadow-xl text-white">
             <div className="flex items-center gap-3 mb-6">
               <Brain className="w-8 h-8" />
               <div>
                 <h2 className="text-2xl font-bold mb-1">あなた専用プラン</h2>
-                <p className="text-white/90 text-sm">{profile.aiCoachProfile}</p>
+                <p className="text-white/90 text-sm">{profile.aiCoachProfile || 'あなた専用の学習プランを作成しました'}</p>
               </div>
             </div>
             <div className="space-y-3 mb-6">
@@ -146,7 +146,7 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
             </div>
           </div>
 
-          {!profile ? (
+          {!profile || !profile.learningPlan ? (
             <div
               onClick={() => onNavigate?.('profile')}
               className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl p-6 shadow-md hover:shadow-xl border border-purple-100/50 transition-all cursor-pointer group"
@@ -157,8 +157,12 @@ export default function Dashboard({ onNavigate }: DashboardProps = {}) {
                     <Brain className="w-7 h-7 text-purple-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 text-lg">パーソナライゼーション診断</h3>
-                    <p className="text-sm text-gray-500">あなた専用の学習プランを作成</p>
+                    <h3 className="font-bold text-gray-900 text-lg">
+                      {profile ? '診断を完了' : 'パーソナライゼーション診断'}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {profile ? '残りの診断を完了してプランを作成' : 'あなた専用の学習プランを作成'}
+                    </p>
                   </div>
                 </div>
                 <ArrowRight className="w-5 h-5 text-gray-400 group-hover:translate-x-1 transition-transform" />

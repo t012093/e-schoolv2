@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Eye, Headphones, Users, Calculator, Palette, Music, TreePine, BookOpen } from 'lucide-react'
+import { Eye, Headphones, Users, Calculator, Palette, Music, TreePine, BookOpen, ChevronRight, Lightbulb } from 'lucide-react'
 
 export type LearningStyleResult = {
   visualScore: number
@@ -185,64 +185,85 @@ export function LearningStyleAssessment({ onComplete, existingResult }: Learning
   const question = learningStyleQuestions[currentQuestion]
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-purple-600" />
+    <div className="max-w-4xl mx-auto space-y-8 p-8">
+      {/* Header Card */}
+      <div className="bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl border-2 border-white/30">
+            <Lightbulb className="w-8 h-8 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-semibold">学習スタイル診断</h2>
-            <p className="text-sm text-gray-600">VAK学習タイプ & 多重知能理論分析</p>
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold mb-1">学習スタイル診断</h2>
+            <p className="text-white/90 text-lg">VAK学習タイプ & 多重知能理論分析</p>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">進捗</span>
-            <span className="text-sm font-medium">{currentQuestion + 1}/{learningStyleQuestions.length}</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-purple-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="text-center">
+            <p className="text-sm text-white/70 mb-1">進捗</p>
+            <p className="text-3xl font-bold">{currentQuestion + 1}<span className="text-lg">/{learningStyleQuestions.length}</span></p>
           </div>
         </div>
+      </div>
 
-        <div className="bg-gray-50 rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-medium mb-4">
-            質問 {currentQuestion + 1}
-          </h3>
-          <p className="text-base mb-6">{question.text}</p>
-          
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600 text-center mb-3">
-              あなたにどの程度当てはまりますか？
-            </p>
-            <div className="grid grid-cols-5 gap-2">
-              {[
-                { value: 1, label: '全く\n当てはまらない' },
-                { value: 2, label: 'あまり\n当てはまらない' },
-                { value: 3, label: 'どちらとも\nいえない' },
-                { value: 4, label: 'やや\n当てはまる' },
-                { value: 5, label: 'とても\n当てはまる' }
-              ].map(option => (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswer(option.value)}
-                  className="p-3 border border-gray-300 rounded-lg hover:bg-purple-50 hover:border-purple-300 transition-colors text-sm text-center whitespace-pre-line"
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+      {/* Progress Bar */}
+      <div className="bg-gradient-to-br from-white to-gray-50/50 rounded-3xl p-6 shadow-xl border-2 border-blue-100/50">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-sm font-semibold text-gray-600">診断の進捗状況</span>
+          <span className="text-sm font-bold text-blue-600">{Math.round(progress)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+          <div
+            className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 h-4 rounded-full transition-all duration-500 ease-out shadow-lg"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Question Card */}
+      <div className="bg-gradient-to-br from-white via-purple-50/20 to-blue-50/20 rounded-3xl p-10 shadow-2xl border-2 border-blue-100/50">
+        <div className="mb-8">
+          <div className="inline-block px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full mb-4">
+            <span className="text-sm font-bold text-blue-700">質問 {currentQuestion + 1}</span>
           </div>
+          <h3 className="text-2xl font-bold text-gray-900 leading-relaxed">{question.text}</h3>
         </div>
 
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <span>所要時間: 約2分</span>
-          <span>学習効果を最大化するため</span>
+        <div className="space-y-6">
+          <p className="text-center text-gray-600 font-medium text-lg mb-6">
+            あなたにどの程度当てはまりますか？
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {[
+              { value: 1, label: '全く当てはまらない', emoji: '❌', color: 'from-red-400 to-pink-400' },
+              { value: 2, label: 'あまり当てはまらない', emoji: '😐', color: 'from-orange-400 to-yellow-400' },
+              { value: 3, label: 'どちらともいえない', emoji: '🤔', color: 'from-yellow-400 to-amber-400' },
+              { value: 4, label: 'やや当てはまる', emoji: '😊', color: 'from-lime-400 to-green-400' },
+              { value: 5, label: 'とても当てはまる', emoji: '✅', color: 'from-green-400 to-emerald-400' }
+            ].map(option => (
+              <button
+                key={option.value}
+                onClick={() => handleAnswer(option.value)}
+                className="group relative bg-white rounded-3xl p-6 border-2 border-gray-200 hover:border-blue-300 shadow-lg hover:shadow-2xl transition-all hover:scale-105"
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">{option.emoji}</div>
+                  <p className="text-sm font-bold text-gray-700 leading-tight">{option.label}</p>
+                </div>
+                <div className={`absolute inset-0 bg-gradient-to-br ${option.color} opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity`}></div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-between items-center text-gray-500 px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></div>
+          <span className="text-sm font-medium">所要時間: 約2分</span>
+        </div>
+        <div className="flex items-center gap-2 font-medium">
+          <span className="text-sm">次の質問へ</span>
+          <ChevronRight className="w-5 h-5" />
         </div>
       </div>
     </div>
@@ -251,123 +272,168 @@ export function LearningStyleAssessment({ onComplete, existingResult }: Learning
 
 function LearningStyleResult({ result }: { result: LearningStyleResult }) {
   const styles = [
-    { 
-      key: 'visual', 
-      label: '視覚的学習', 
-      score: result.visualScore, 
-      icon: Eye, 
+    {
+      key: 'visual',
+      label: '視覚的学習',
+      score: result.visualScore,
+      icon: Eye,
       color: 'bg-blue-500',
+      gradientColor: 'from-blue-400 to-cyan-400',
+      emoji: '👁️',
       description: '図表・画像・色彩を活用'
     },
-    { 
-      key: 'auditory', 
-      label: '聴覚的学習', 
-      score: result.auditoryScore, 
-      icon: Headphones, 
+    {
+      key: 'auditory',
+      label: '聴覚的学習',
+      score: result.auditoryScore,
+      icon: Headphones,
       color: 'bg-green-500',
+      gradientColor: 'from-green-400 to-emerald-400',
+      emoji: '👂',
       description: '音声・対話・リズムを活用'
     },
-    { 
-      key: 'kinesthetic', 
-      label: '体感的学習', 
-      score: result.kinestheticScore, 
-      icon: Users, 
+    {
+      key: 'kinesthetic',
+      label: '体感的学習',
+      score: result.kinestheticScore,
+      icon: Users,
       color: 'bg-orange-500',
+      gradientColor: 'from-orange-400 to-amber-400',
+      emoji: '🤲',
       description: '体験・実践・動作を活用'
     }
   ]
 
   const intelligences = [
-    { key: 'linguistic', label: '言語的', icon: BookOpen, score: result.multipleIntelligences.linguistic },
-    { key: 'logical', label: '論理数学的', icon: Calculator, score: result.multipleIntelligences.logical },
-    { key: 'spatial', label: '空間的', icon: Palette, score: result.multipleIntelligences.spatial },
-    { key: 'musical', label: '音楽的', icon: Music, score: result.multipleIntelligences.musical },
-    { key: 'interpersonal', label: '対人的', icon: Users, score: result.multipleIntelligences.interpersonal },
-    { key: 'intrapersonal', label: '内省的', icon: Eye, score: result.multipleIntelligences.intrapersonal },
-    { key: 'naturalist', label: '自然探求的', icon: TreePine, score: result.multipleIntelligences.naturalist },
-    { key: 'bodily', label: '身体運動的', icon: Users, score: result.multipleIntelligences.bodily },
+    { key: 'linguistic', label: '言語的', icon: BookOpen, emoji: '📚', score: result.multipleIntelligences.linguistic },
+    { key: 'logical', label: '論理数学的', icon: Calculator, emoji: '🔢', score: result.multipleIntelligences.logical },
+    { key: 'spatial', label: '空間的', icon: Palette, emoji: '🎨', score: result.multipleIntelligences.spatial },
+    { key: 'musical', label: '音楽的', icon: Music, emoji: '🎵', score: result.multipleIntelligences.musical },
+    { key: 'interpersonal', label: '対人的', icon: Users, emoji: '👥', score: result.multipleIntelligences.interpersonal },
+    { key: 'intrapersonal', label: '内省的', icon: Eye, emoji: '🧘', score: result.multipleIntelligences.intrapersonal },
+    { key: 'naturalist', label: '自然探求的', icon: TreePine, emoji: '🌳', score: result.multipleIntelligences.naturalist },
+    { key: 'bodily', label: '身体運動的', icon: Users, emoji: '🏃', score: result.multipleIntelligences.bodily },
   ]
 
   const primaryStyleData = styles.find(s => s.key === result.primaryStyle)
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-purple-50 rounded-lg flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-purple-600" />
+    <div className="max-w-4xl mx-auto space-y-8 p-8">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500 rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl border-2 border-white/30">
+            <Lightbulb className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">学習スタイル診断結果</h2>
-            <p className="text-sm text-gray-600">あなたに最適な学習アプローチ</p>
+            <h2 className="text-3xl font-bold mb-1">学習スタイル診断結果</h2>
+            <p className="text-white/90 text-lg">あなたに最適な学習アプローチ</p>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Primary Learning Style */}
-          <div className="bg-purple-50 rounded-lg p-6">
-            <h3 className="font-semibold text-lg mb-4">メイン学習スタイル</h3>
-            {primaryStyleData && (
-              <div className="bg-white rounded-md p-4 mb-4">
-                <div className="flex items-center gap-3 mb-2">
-                  <primaryStyleData.icon className="w-6 h-6 text-purple-600" />
-                  <span className="font-medium text-lg">{primaryStyleData.label}</span>
+      {/* Primary Learning Style - Hero Section */}
+      {primaryStyleData && (
+        <div className={`bg-gradient-to-br ${primaryStyleData.gradientColor} rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden`}>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+          <div className="relative z-10">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="text-5xl">{primaryStyleData.emoji}</div>
+              <div>
+                <h3 className="text-2xl font-bold mb-1">あなたのメイン学習スタイル</h3>
+                <p className="text-white/90 text-xl font-semibold">{primaryStyleData.label}</p>
+              </div>
+            </div>
+            <p className="text-white/90 text-lg mb-4">{primaryStyleData.description}</p>
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-medium">適合度</span>
+                <span className="text-2xl font-bold">{primaryStyleData.score}%</span>
+              </div>
+              <div className="w-full bg-white/30 rounded-full h-3">
+                <div
+                  className="bg-white h-3 rounded-full shadow-lg transition-all duration-500"
+                  style={{ width: `${primaryStyleData.score}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* VAK Learning Styles Comparison */}
+        <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl p-8 shadow-xl border-2 border-purple-100/50">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            学習スタイル比較
+          </h3>
+          <div className="space-y-5">
+            {styles.map(style => (
+              <div key={style.key} className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-2xl">{style.emoji}</div>
+                  <div className="flex-1">
+                    <span className="font-semibold text-gray-900">{style.label}</span>
+                    <p className="text-xs text-gray-600">{style.description}</p>
+                  </div>
+                  <span className="text-lg font-bold text-gray-900">{style.score}%</span>
                 </div>
-                <p className="text-sm text-gray-600 mb-2">{primaryStyleData.description}</p>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div 
-                    className={`${primaryStyleData.color} h-2 rounded-full`}
-                    style={{ width: `${primaryStyleData.score}%` }}
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className={`${style.color} h-2.5 rounded-full transition-all duration-500 shadow-sm`}
+                    style={{ width: `${style.score}%` }}
                   />
                 </div>
-                <span className="text-sm font-medium">{primaryStyleData.score}%</span>
-              </div>
-            )}
-            
-            <h4 className="font-medium mb-2">学習スタイル比較</h4>
-            <div className="space-y-2">
-              {styles.map(style => (
-                <div key={style.key} className="flex justify-between items-center">
-                  <span className="text-sm">{style.label}</span>
-                  <span className="text-sm font-medium">{style.score}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Multiple Intelligences */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="font-semibold text-lg mb-4">多重知能プロフィール</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {intelligences.map(intelligence => (
-                <div key={intelligence.key} className="bg-white rounded-md p-3">
-                  <div className="flex items-center gap-2 mb-2">
-                    <intelligence.icon className="w-4 h-4 text-gray-600" />
-                    <span className="text-sm font-medium">{intelligence.label}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-1.5">
-                    <div 
-                      className="bg-purple-500 h-1.5 rounded-full"
-                      style={{ width: `${intelligence.score}%` }}
-                    />
-                  </div>
-                  <span className="text-xs text-gray-600">{intelligence.score}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Recommendations */}
-        <div className="bg-blue-50 rounded-lg p-6">
-          <h3 className="font-semibold text-lg mb-4">推奨学習方法</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {result.recommendations.map((rec, index) => (
-              <div key={index} className="bg-white rounded-md p-4">
-                <p className="text-sm">{rec}</p>
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Multiple Intelligences */}
+        <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl p-8 shadow-xl border-2 border-blue-100/50">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <span className="text-2xl">🧠</span>
+            多重知能プロフィール
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            {intelligences.map(intelligence => (
+              <div key={intelligence.key} className="bg-white rounded-2xl p-4 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xl">{intelligence.emoji}</span>
+                  <span className="text-sm font-semibold text-gray-900">{intelligence.label}</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                  <div
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                    style={{ width: `${intelligence.score}%` }}
+                  />
+                </div>
+                <span className="text-xs font-bold text-gray-700">{intelligence.score}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-8 shadow-xl border-2 border-orange-100/50">
+        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+          <span className="text-2xl">💡</span>
+          推奨学習方法
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {result.recommendations.map((rec, index) => (
+            <div key={index} className="bg-white rounded-2xl p-5 shadow-md border border-orange-100 hover:shadow-lg transition-all hover:scale-105">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-white text-xs font-bold">{index + 1}</span>
+                </div>
+                <p className="text-sm font-medium text-gray-800 leading-relaxed">{rec}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

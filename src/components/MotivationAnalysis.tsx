@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import { Target, Users, Award, TrendingUp } from 'lucide-react'
+import { Target, Users, Award, TrendingUp, Rocket, ChevronRight, Zap } from 'lucide-react'
 
 export type MotivationResult = {
   autonomy: number
@@ -195,64 +195,85 @@ export function MotivationAnalysis({ onComplete, existingResult }: MotivationAna
   const question = motivationQuestions[currentQuestion]
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
-            <Target className="w-5 h-5 text-orange-600" />
+    <div className="max-w-4xl mx-auto space-y-8 p-8">
+      {/* Header Card */}
+      <div className="bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl border-2 border-white/30">
+            <Rocket className="w-8 h-8 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-semibold">学習動機分析</h2>
-            <p className="text-sm text-gray-600">自己決定理論に基づく動機づけタイプ診断</p>
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold mb-1">学習動機分析</h2>
+            <p className="text-white/90 text-lg">自己決定理論に基づく動機づけタイプ診断</p>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">進捗</span>
-            <span className="text-sm font-medium">{currentQuestion + 1}/{motivationQuestions.length}</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-orange-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="text-center">
+            <p className="text-sm text-white/70 mb-1">進捗</p>
+            <p className="text-3xl font-bold">{currentQuestion + 1}<span className="text-lg">/{motivationQuestions.length}</span></p>
           </div>
         </div>
+      </div>
 
-        <div className="bg-gray-50 rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-medium mb-4">
-            質問 {currentQuestion + 1}
-          </h3>
-          <p className="text-base mb-6">{question.text}</p>
-          
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600 text-center mb-3">
-              あなたにどの程度当てはまりますか？
-            </p>
-            <div className="grid grid-cols-5 gap-2">
-              {[
-                { value: 1, label: '全く\n当てはまらない' },
-                { value: 2, label: 'あまり\n当てはまらない' },
-                { value: 3, label: 'どちらとも\nいえない' },
-                { value: 4, label: 'やや\n当てはまる' },
-                { value: 5, label: 'とても\n当てはまる' }
-              ].map(option => (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswer(option.value)}
-                  className="p-3 border border-gray-300 rounded-lg hover:bg-orange-50 hover:border-orange-300 transition-colors text-sm text-center whitespace-pre-line"
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+      {/* Progress Bar */}
+      <div className="bg-gradient-to-br from-white to-gray-50/50 rounded-3xl p-6 shadow-xl border-2 border-orange-100/50">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-sm font-semibold text-gray-600">診断の進捗状況</span>
+          <span className="text-sm font-bold text-orange-600">{Math.round(progress)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+          <div
+            className="bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 h-4 rounded-full transition-all duration-500 ease-out shadow-lg"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Question Card */}
+      <div className="bg-gradient-to-br from-white via-orange-50/20 to-red-50/20 rounded-3xl p-10 shadow-2xl border-2 border-orange-100/50">
+        <div className="mb-8">
+          <div className="inline-block px-4 py-2 bg-gradient-to-r from-orange-100 to-red-100 rounded-full mb-4">
+            <span className="text-sm font-bold text-orange-700">質問 {currentQuestion + 1}</span>
           </div>
+          <h3 className="text-2xl font-bold text-gray-900 leading-relaxed">{question.text}</h3>
         </div>
 
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <span>所要時間: 約3分</span>
-          <span>効果的な学習環境の設計</span>
+        <div className="space-y-6">
+          <p className="text-center text-gray-600 font-medium text-lg mb-6">
+            あなたにどの程度当てはまりますか？
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {[
+              { value: 1, label: '全く当てはまらない', emoji: '❌', color: 'from-red-400 to-pink-400' },
+              { value: 2, label: 'あまり当てはまらない', emoji: '😐', color: 'from-orange-400 to-yellow-400' },
+              { value: 3, label: 'どちらともいえない', emoji: '🤔', color: 'from-yellow-400 to-amber-400' },
+              { value: 4, label: 'やや当てはまる', emoji: '😊', color: 'from-lime-400 to-green-400' },
+              { value: 5, label: 'とても当てはまる', emoji: '✅', color: 'from-green-400 to-emerald-400' }
+            ].map(option => (
+              <button
+                key={option.value}
+                onClick={() => handleAnswer(option.value)}
+                className="group relative bg-white rounded-3xl p-6 border-2 border-gray-200 hover:border-orange-300 shadow-lg hover:shadow-2xl transition-all hover:scale-105"
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">{option.emoji}</div>
+                  <p className="text-sm font-bold text-gray-700 leading-tight">{option.label}</p>
+                </div>
+                <div className={`absolute inset-0 bg-gradient-to-br ${option.color} opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity`}></div>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-between items-center text-gray-500 px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-orange-400 animate-pulse"></div>
+          <span className="text-sm font-medium">所要時間: 約3分</span>
+        </div>
+        <div className="flex items-center gap-2 font-medium">
+          <span className="text-sm">次の質問へ</span>
+          <ChevronRight className="w-5 h-5" />
         </div>
       </div>
     </div>
@@ -261,28 +282,34 @@ export function MotivationAnalysis({ onComplete, existingResult }: MotivationAna
 
 function MotivationResult({ result }: { result: MotivationResult }) {
   const factors = [
-    { 
-      key: 'autonomy', 
-      label: '自律性', 
+    {
+      key: 'autonomy',
+      label: '自律性',
       score: result.autonomy,
-      icon: Target, 
+      icon: Target,
       color: 'bg-blue-500',
+      gradientColor: 'from-blue-400 to-cyan-400',
+      emoji: '🎯',
       description: '自己決定・選択権'
     },
-    { 
-      key: 'competence', 
-      label: '有能感', 
+    {
+      key: 'competence',
+      label: '有能感',
       score: result.competence,
-      icon: Award, 
+      icon: Award,
       color: 'bg-green-500',
+      gradientColor: 'from-green-400 to-emerald-400',
+      emoji: '🏆',
       description: '達成感・成長実感'
     },
-    { 
-      key: 'relatedness', 
-      label: '関係性', 
+    {
+      key: 'relatedness',
+      label: '関係性',
       score: result.relatedness,
-      icon: Users, 
+      icon: Users,
       color: 'bg-purple-500',
+      gradientColor: 'from-purple-400 to-pink-400',
+      emoji: '🤝',
       description: '所属感・つながり'
     }
   ]
@@ -292,97 +319,142 @@ function MotivationResult({ result }: { result: MotivationResult }) {
       case 'autonomous':
         return {
           label: '自律的動機',
-          description: '内発的動機が高く、自主的な学習を好む',
-          color: 'bg-blue-50 text-blue-900 border-blue-200'
+          emoji: '🚀',
+          description: '内発的動機が高く、自主的な学習を好むタイプ。自分で目標を設定し、主体的に学習を進めることで最大の成果を発揮します。',
+          color: 'bg-blue-50 text-blue-900 border-blue-200',
+          gradientColor: 'from-blue-400 to-cyan-400'
         }
       case 'controlled':
         return {
           label: '統制的動機',
-          description: '外的な指導やサポートを重視する',
-          color: 'bg-yellow-50 text-yellow-900 border-yellow-200'
+          emoji: '🎓',
+          description: '外的な指導やサポートを重視するタイプ。明確な指示と構造化された環境で安定した学習成果を上げます。',
+          color: 'bg-amber-50 text-amber-900 border-amber-200',
+          gradientColor: 'from-amber-400 to-orange-400'
         }
       default:
         return {
           label: 'バランス型動機',
-          description: '内発と外発のバランスが取れている',
-          color: 'bg-green-50 text-green-900 border-green-200'
+          emoji: '⚖️',
+          description: '内発と外発のバランスが取れているタイプ。状況に応じて柔軟に学習スタイルを調整できる適応力が強みです。',
+          color: 'bg-green-50 text-green-900 border-green-200',
+          gradientColor: 'from-green-400 to-teal-400'
         }
     }
+  }
+
+  const motivationEmojis: Record<string, string> = {
+    '目標達成・競争': '🎯',
+    '知的好奇心・探求': '🔍',
+    '承認・評価': '👏',
+    '実用性・応用': '💼',
+    'バランス型': '⚖️'
   }
 
   const motivationInfo = getMotivationTypeInfo(result.motivationType)
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-orange-50 rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-orange-600" />
+    <div className="max-w-4xl mx-auto space-y-8 p-8">
+      {/* Header */}
+      <div className="bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl border-2 border-white/30">
+            <Rocket className="w-8 h-8 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">学習動機分析結果</h2>
-            <p className="text-sm text-gray-600">あなたの動機づけパターンと推奨アプローチ</p>
+            <h2 className="text-3xl font-bold mb-1">学習動機分析結果</h2>
+            <p className="text-white/90 text-lg">あなたの動機づけパターンと推奨アプローチ</p>
           </div>
         </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* SDT Factors */}
-          <div className="space-y-4">
-            <h3 className="font-semibold text-lg">自己決定理論（SDT）プロフィール</h3>
+      {/* Motivation Type - Hero Section */}
+      <div className={`bg-gradient-to-br ${motivationInfo.gradientColor} rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden`}>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="text-5xl">{motivationInfo.emoji}</div>
+            <div>
+              <h3 className="text-2xl font-bold mb-1">あなたの動機づけタイプ</h3>
+              <p className="text-white/90 text-xl font-semibold">{motivationInfo.label}</p>
+            </div>
+          </div>
+          <p className="text-white/90 text-lg mb-4 leading-relaxed">{motivationInfo.description}</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* SDT Factors */}
+        <div className="bg-gradient-to-br from-white to-blue-50/30 rounded-3xl p-8 shadow-xl border-2 border-blue-100/50">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <span className="text-2xl">📊</span>
+            自己決定理論（SDT）プロフィール
+          </h3>
+          <div className="space-y-5">
             {factors.map(factor => (
-              <div key={factor.key} className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <factor.icon className="w-5 h-5 text-gray-600" />
+              <div key={factor.key} className="bg-white rounded-2xl p-4 shadow-md border border-gray-100">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-2xl">{factor.emoji}</div>
                   <div className="flex-1">
-                    <div className="flex justify-between">
-                      <span className="font-medium">{factor.label}</span>
-                      <span className="text-sm font-medium">{factor.score}/100</span>
-                    </div>
-                    <p className="text-sm text-gray-500">{factor.description}</p>
+                    <span className="font-semibold text-gray-900">{factor.label}</span>
+                    <p className="text-xs text-gray-600">{factor.description}</p>
                   </div>
+                  <span className="text-lg font-bold text-gray-900">{factor.score}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2 ml-8">
-                  <div 
-                    className={`${factor.color} h-2 rounded-full transition-all duration-500`}
+                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                  <div
+                    className={`${factor.color} h-2.5 rounded-full transition-all duration-500 shadow-sm`}
                     style={{ width: `${factor.score}%` }}
                   />
                 </div>
               </div>
             ))}
           </div>
-
-          {/* Motivation Type */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="font-semibold text-lg mb-4">動機づけタイプ</h3>
-            <div className={`border rounded-lg p-4 mb-4 ${motivationInfo.color}`}>
-              <h4 className="font-medium text-lg mb-2">{motivationInfo.label}</h4>
-              <p className="text-sm">{motivationInfo.description}</p>
-            </div>
-
-            <h4 className="font-medium mb-3">主要な学習動機</h4>
-            <div className="space-y-2">
-              {result.learningMotivators.map((motivator, index) => (
-                <div key={index} className="bg-white rounded-md p-3 text-sm font-medium">
-                  {motivator}
-                </div>
-              ))}
-            </div>
-          </div>
         </div>
 
-        {/* Recommendations */}
-        <div className="bg-orange-50 rounded-lg p-6">
-          <h3 className="font-semibold text-lg mb-4">推奨学習アプローチ</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {result.recommendedApproaches.map((approach, index) => (
-              <div key={index} className="bg-white rounded-md p-4">
-                <p className="text-sm">{approach}</p>
+        {/* Learning Motivators */}
+        <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl p-8 shadow-xl border-2 border-purple-100/50">
+          <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <span className="text-2xl">⚡</span>
+            主要な学習動機
+          </h3>
+          <div className="space-y-3">
+            {result.learningMotivators.map((motivator, index) => (
+              <div key={index} className="bg-white rounded-2xl p-4 shadow-md border border-gray-100 hover:shadow-lg transition-all">
+                <div className="flex items-center gap-3">
+                  <span className="text-2xl">{motivationEmojis[motivator] || '✨'}</span>
+                  <span className="text-base font-semibold text-gray-900">{motivator}</span>
+                </div>
               </div>
             ))}
           </div>
-          
-          <div className="mt-4 p-4 bg-white rounded-md border-l-4 border-orange-500">
-            <p className="text-sm text-gray-700">
+        </div>
+      </div>
+
+      {/* Recommendations */}
+      <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-3xl p-8 shadow-xl border-2 border-orange-100/50">
+        <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
+          <span className="text-2xl">💡</span>
+          推奨学習アプローチ
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {result.recommendedApproaches.map((approach, index) => (
+            <div key={index} className="bg-white rounded-2xl p-5 shadow-md border border-orange-100 hover:shadow-lg transition-all hover:scale-105">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 bg-gradient-to-br from-orange-400 to-red-400 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-white text-xs font-bold">{index + 1}</span>
+                </div>
+                <p className="text-sm font-medium text-gray-800 leading-relaxed">{approach}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border-l-4 border-orange-500 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl flex-shrink-0">🎯</span>
+            <p className="text-sm text-gray-700 leading-relaxed">
               <strong>重要：</strong>これらの結果は学習環境の最適化に活用され、
               AIコーチがあなたに合わせた学習計画とフィードバックを提供します。
             </p>

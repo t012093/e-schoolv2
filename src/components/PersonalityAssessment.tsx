@@ -128,67 +128,85 @@ export function PersonalityAssessment({ onComplete, existingResult }: Personalit
   const question = bigFiveQuestions[currentQuestion]
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center">
-            <Brain className="w-5 h-5 text-blue-600" />
+    <div className="max-w-4xl mx-auto space-y-8 p-8">
+      {/* Header Card */}
+      <div className="bg-gradient-to-br from-purple-400 via-blue-500 to-pink-500 rounded-3xl p-8 shadow-2xl text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-xl border-2 border-white/30">
+            <Brain className="w-8 h-8 text-white" />
           </div>
-          <div>
-            <h2 className="text-xl font-semibold">性格特性診断</h2>
-            <p className="text-sm text-gray-600">Big Five理論に基づく学習スタイル分析</p>
+          <div className="flex-1">
+            <h2 className="text-3xl font-bold mb-1">性格特性診断</h2>
+            <p className="text-white/90 text-lg">Big Five理論に基づく学習スタイル分析</p>
           </div>
-        </div>
-
-        <div className="mb-6">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm text-gray-600">進捗</span>
-            <span className="text-sm font-medium">{currentQuestion + 1}/{bigFiveQuestions.length}</span>
-          </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div 
-              className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
+          <div className="text-center">
+            <p className="text-sm text-white/70 mb-1">進捗</p>
+            <p className="text-3xl font-bold">{currentQuestion + 1}<span className="text-lg">/{bigFiveQuestions.length}</span></p>
           </div>
         </div>
+      </div>
 
-        <div className="bg-gray-50 rounded-lg p-6 mb-6">
-          <h3 className="text-lg font-medium mb-4">
-            質問 {currentQuestion + 1}
-          </h3>
-          <p className="text-base mb-6">{question.text}</p>
-          
-          <div className="space-y-2">
-            <p className="text-sm text-gray-600 text-center mb-3">
-              あなたにどの程度当てはまりますか？
-            </p>
-            <div className="grid grid-cols-5 gap-2">
-              {[
-                { value: 1, label: '全く\n当てはまらない' },
-                { value: 2, label: 'あまり\n当てはまらない' },
-                { value: 3, label: 'どちらとも\nいえない' },
-                { value: 4, label: 'やや\n当てはまる' },
-                { value: 5, label: 'とても\n当てはまる' }
-              ].map(option => (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswer(option.value)}
-                  className="p-3 border border-gray-300 rounded-lg hover:bg-blue-50 hover:border-blue-300 transition-colors text-sm text-center whitespace-pre-line"
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+      {/* Progress Bar */}
+      <div className="bg-gradient-to-br from-white to-gray-50/50 rounded-3xl p-6 shadow-xl border-2 border-purple-100/50">
+        <div className="flex justify-between items-center mb-3">
+          <span className="text-sm font-semibold text-gray-600">診断の進捗状況</span>
+          <span className="text-sm font-bold text-purple-600">{Math.round(progress)}%</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
+          <div
+            className="bg-gradient-to-r from-purple-400 via-blue-500 to-pink-500 h-4 rounded-full transition-all duration-500 ease-out shadow-lg"
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Question Card */}
+      <div className="bg-gradient-to-br from-white via-blue-50/20 to-purple-50/20 rounded-3xl p-10 shadow-2xl border-2 border-purple-100/50">
+        <div className="mb-8">
+          <div className="inline-block px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 rounded-full mb-4">
+            <span className="text-sm font-bold text-purple-700">質問 {currentQuestion + 1}</span>
           </div>
+          <h3 className="text-2xl font-bold text-gray-900 leading-relaxed">{question.text}</h3>
         </div>
 
-        <div className="flex justify-between items-center text-sm text-gray-500">
-          <span>所要時間: 約3分</span>
-          <div className="flex items-center gap-1">
-            <span>次へ</span>
-            <ChevronRight className="w-4 h-4" />
+        <div className="space-y-6">
+          <p className="text-center text-gray-600 font-medium text-lg mb-6">
+            あなたにどの程度当てはまりますか？
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {[
+              { value: 1, label: '全く当てはまらない', emoji: '❌', color: 'from-red-400 to-pink-400' },
+              { value: 2, label: 'あまり当てはまらない', emoji: '😐', color: 'from-orange-400 to-yellow-400' },
+              { value: 3, label: 'どちらともいえない', emoji: '🤔', color: 'from-yellow-400 to-amber-400' },
+              { value: 4, label: 'やや当てはまる', emoji: '😊', color: 'from-lime-400 to-green-400' },
+              { value: 5, label: 'とても当てはまる', emoji: '✅', color: 'from-green-400 to-emerald-400' }
+            ].map(option => (
+              <button
+                key={option.value}
+                onClick={() => handleAnswer(option.value)}
+                className="group relative bg-white rounded-3xl p-6 border-2 border-gray-200 hover:border-purple-300 shadow-lg hover:shadow-2xl transition-all hover:scale-105"
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">{option.emoji}</div>
+                  <p className="text-sm font-bold text-gray-700 leading-tight">{option.label}</p>
+                </div>
+                <div className={`absolute inset-0 bg-gradient-to-br ${option.color} opacity-0 group-hover:opacity-10 rounded-3xl transition-opacity`}></div>
+              </button>
+            ))}
           </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-between items-center text-gray-500 px-4">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+          <span className="text-sm font-medium">所要時間: 約3分</span>
+        </div>
+        <div className="flex items-center gap-2 font-medium">
+          <span className="text-sm">次の質問へ</span>
+          <ChevronRight className="w-5 h-5" />
         </div>
       </div>
     </div>

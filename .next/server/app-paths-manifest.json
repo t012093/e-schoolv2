@@ -1,6 +1,7 @@
 {
-  "/plan/curriculum/page": "app/plan/curriculum/page.js",
+  "/not-found": "app/not-found.js",
   "/page": "app/page.js",
-  "/health/page": "app/health/page.js",
-  "/plan/roadmap/page": "app/plan/roadmap/page.js"
+  "/desktop/page": "app/desktop/page.js",
+  "/api/tasks/route": "app/api/tasks/route.js",
+  "/api/tasks/reorder/route": "app/api/tasks/reorder/route.js"
 }
